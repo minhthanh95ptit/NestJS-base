@@ -2,6 +2,7 @@ import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UsersService } from 'src/modules/users/users.service';
+import { MailService } from 'src/mail/mail.service';
 import AuthCreadentialsDto from './dto/auth-credentials.dto';
 import JwtPayload from './payloads/jwtPayload';
 import { AuthMessage } from './auth.constants';
@@ -12,6 +13,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService
   ) {}
 
   /**
@@ -42,6 +44,8 @@ export class AuthService {
       const payload: JwtPayload = { email };
       const jwtAccessToken = await this.jwtService.signAsync(payload);
 
+      // send confirmation mail
+      await this.mailService.sendUserConfirmation(user, jwtAccessToken);
       return { jwtAccessToken };
     }
     // Else return an error.
