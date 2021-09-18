@@ -22,6 +22,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import AuthCreadentialsDto from './dto/auth-credentials.dto';
+import VerifyPassCodeDto from './dto/verify-pass-code.dto';
 import { Request } from 'express';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 
@@ -75,9 +76,40 @@ export class AuthController {
   })
   async signIn(
     @Body(ValidationPipe) authCredentialsDto: AuthCreadentialsDto,
-  ): Promise<TokenResponseDto> {
+  ): Promise<boolean> {
     return this.authService.signIn(authCredentialsDto);
   }
+
+  @Post('/verify-pass-code')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: AuthSummary.SIGN_IN_SUMMARY })
+  @ApiBody({ type: VerifyPassCodeDto })
+  @ApiOkResponse({
+    description: AuthDescription.SIGN_IN_SUCCESS,
+    type: TokenResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: AuthDescription.INVALID_CREDENTIALS,
+    type: ErrorResponse,
+  })
+  @ApiInternalServerErrorResponse({
+    description: CommonDescription.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse,
+  })
+  async verifyPassCode(
+    @Body(ValidationPipe) verifyPassCodeDto: VerifyPassCodeDto,
+  ): Promise<TokenResponseDto> {
+    return this.authService.verifyPassCode(verifyPassCodeDto);
+  }
+
+  @Post('/generate-qr')
+  async generateQR(
+    @Body('text') text: any,
+  ): Promise<any> {
+    console.log(text);
+    return this.authService.generateQR(text);
+  }
+
 
   @Get('/facebook')
   @ApiExcludeEndpoint()
