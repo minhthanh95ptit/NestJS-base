@@ -10,12 +10,12 @@ import { join } from 'path';
       // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
       // or
       transport: {
-        host: 'smtp.gmail.com',
+        host: process.env.MAIL_HOST,
         port: 587,
         secure: false,
         auth: {
-          user: 'anhdq@vmodev.com',
-          pass: 'ecrvmqaoedtzhcwq',
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASSWORD,
         },
       },
       defaults: {
