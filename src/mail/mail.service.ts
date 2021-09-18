@@ -6,8 +6,8 @@ import { User } from '../modules/users/user.entity';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(user: User, otpCode: string) {
-    // const url = `example.com/auth/confirm?token=${token}`;
+  async sendUserConfirmation(user: User, token: string) {
+    const url = `example.com/auth/confirm?token=${token}`;
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -16,7 +16,7 @@ export class MailService {
       template: './confirmation', // `.hbs` extension is appended automatically
       context: { // ✏️ filling curly brackets with content
         name: user.email,
-        otpCode,
+        url,
       },
     });
   }

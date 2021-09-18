@@ -56,8 +56,8 @@ export class UsersService {
    * @param id User ID.
    * @param editUserDto EditUserDto.
    */
-  async update(id: string, editUserDto: any): Promise<UserRespondDto> {
-    const { email, password, passCode } = editUserDto;
+  async update(id: string, editUserDto: EditUserDto): Promise<UserRespondDto> {
+    const { email, password } = editUserDto;
     const existUser = await this.usersRepository.findOne(id);
     if (!existUser) {
       throw new NotFoundException(CommonMessage.NOT_FOUND_BY_ID);
@@ -71,13 +71,10 @@ export class UsersService {
       existUser.salt = salt;
       existUser.password = hashPassword;
     }
-
-    if(passCode){
-      existUser.passCode = passCode
-    }
     await existUser.save();
     return existUser;
   }
+
   /**
    * Create a new user.
    * @param authCredentialsDto AuthCredentialsDto.
