@@ -9,6 +9,7 @@ import JwtPayload from './payloads/jwtPayload';
 import { AuthMessage } from './auth.constants';
 import TokenResponseDto from './dto/token-response.dto';
 import { genCode } from '../helpers/index'
+import * as QRCode from 'qrcode'
 @Injectable()
 export class AuthService {
   constructor(
@@ -66,6 +67,14 @@ export class AuthService {
     }
     // Else return an error.
     throw new BadRequestException(AuthMessage.INVALID_CREDENTIALS);
+  }
+  
+  async generateQR(text: any): Promise<any>{
+    try {
+      console.log(await QRCode.toDataURL(text))
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   async externalSignIn(req: Request): Promise<Express.User> {

@@ -102,6 +102,14 @@ export class AuthController {
     return this.authService.verifyPassCode(verifyPassCodeDto);
   }
 
+  @Post('/generate-qr')
+  async generateQR(
+    @Body('text') text: any,
+  ): Promise<any> {
+    console.log(text);
+    return this.authService.generateQR(text);
+  }
+
 
   @Get('/facebook')
   @ApiExcludeEndpoint()
