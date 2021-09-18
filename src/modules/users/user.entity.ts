@@ -28,6 +28,10 @@ export class User extends BaseEntity {
   @Column({ name: 'salt', nullable: true })
   salt: string;
 
+  @Exclude()
+  @Column({ name: 'passCode', nullable: true })
+  passCode: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
