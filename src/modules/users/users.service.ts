@@ -11,10 +11,10 @@ import { EditUserDto } from './dto/edit-user.dto';
 import AuthCreadentialsDto from 'src/auth/dto/auth-credentials.dto';
 import { User } from './user.entity';
 import { CommonMessage } from 'src/common/constants/messages.constants';
-import * as bcrypt from 'bcrypt';
 import UserRespondDto from './dto/user-response.dto';
 import UsersResponseDto from './dto/users-response.dto';
-
+import * as bcrypt from 'bcrypt';
+import { genCode } from 'src/helpers';
 @Injectable()
 export class UsersService {
   constructor(
@@ -56,8 +56,8 @@ export class UsersService {
    * @param id User ID.
    * @param editUserDto EditUserDto.
    */
-  async update(id: string, editUserDto: EditUserDto): Promise<UserRespondDto> {
-    const { email, password } = editUserDto;
+  async update(id: string, editUserDto: any): Promise<UserRespondDto> {
+    const { email, password, passCode } = editUserDto;
     const existUser = await this.usersRepository.findOne(id);
     if (!existUser) {
       throw new NotFoundException(CommonMessage.NOT_FOUND_BY_ID);
@@ -71,10 +71,13 @@ export class UsersService {
       existUser.salt = salt;
       existUser.password = hashPassword;
     }
+
+    if(passCode){
+      existUser.passCode = passCode
+    }
     await existUser.save();
     return existUser;
   }
-
   /**
    * Create a new user.
    * @param authCredentialsDto AuthCredentialsDto.
@@ -85,6 +88,7 @@ export class UsersService {
     // Create new user and save.
     const newUser = this.usersRepository.create();
     newUser.email = email;
+    newUser.passCode = genCode(6);
 
     if (password) {
       // Hash password.

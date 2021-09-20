@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -22,6 +23,8 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import AuthCreadentialsDto from './dto/auth-credentials.dto';
+import VerifyPassCodeDto from './dto/verify-pass-code.dto';
+import ForgotPasswordDto from './dto/forgot-password.dto'
 import { Request } from 'express';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 
@@ -75,9 +78,46 @@ export class AuthController {
   })
   async signIn(
     @Body(ValidationPipe) authCredentialsDto: AuthCreadentialsDto,
-  ): Promise<TokenResponseDto> {
+  ): Promise<any> {
     return this.authService.signIn(authCredentialsDto);
   }
+
+  @Post('/verify-pass-code')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: AuthSummary.SIGN_IN_SUMMARY })
+  @ApiBody({ type: VerifyPassCodeDto })
+  @ApiOkResponse({
+    description: AuthDescription.SIGN_IN_SUCCESS,
+    type: TokenResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: AuthDescription.INVALID_CREDENTIALS,
+    type: ErrorResponse,
+  })
+  @ApiInternalServerErrorResponse({
+    description: CommonDescription.INTERNAL_SERVER_ERROR,
+    type: ErrorResponse,
+  })
+  async verifyPassCode(
+    @Body(ValidationPipe) verifyPassCodeDto: VerifyPassCodeDto,
+  ): Promise<TokenResponseDto> {
+    return this.authService.verifyPassCode(verifyPassCodeDto);
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(
+    @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<any> {
+    return this.authService.sendEmailforgotPassword(forgotPasswordDto);
+  }
+
+  @Get('/new-password/:userId')
+  async newPassword(
+    @Req() request: Request
+  ): Promise<any> {
+    return this.authService.getNewPassword(request);
+  }
+
 
   @Get('/facebook')
   @ApiExcludeEndpoint()
