@@ -20,4 +20,19 @@ export class MailService {
       },
     });
   }
+
+  async sendLinkForGotPassWord(user: User, url: string) {
+    // const url = `example.com/auth/confirm?token=${token}`;
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      // from: '"Support Team" <support@example.com>', // override default from
+      subject: 'Forgot Pass Word',
+      template: './forgot-password', // `.hbs` extension is appended automatically
+      context: { // ✏️ filling curly brackets with content
+        name: user.email,
+        url
+      },
+    });
+  }
 }

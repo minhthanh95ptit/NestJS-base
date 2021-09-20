@@ -9,6 +9,9 @@ import JwtPayload from './payloads/jwtPayload';
 import { AuthMessage } from './auth.constants';
 import TokenResponseDto from './dto/token-response.dto';
 import { genCode } from '../helpers/index'
+import * as moment from "moment" 
+import HttpResponse from '../common/constants/HTTPResponse'
+import ForgotPasswordDto from './dto/forgot-password.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,7 +30,9 @@ export class AuthService {
     await this.usersService.create(authCredentialsDto);
     const payload: JwtPayload = { email: authCredentialsDto.email };
     const jwtAccessToken = await this.jwtService.signAsync(payload);
-    return { jwtAccessToken };
+    return {
+      jwtAccessToken
+     };
   }
 
   /**
@@ -36,20 +41,18 @@ export class AuthService {
    */
   async signIn(
     authCredentialsDto: AuthCreadentialsDto,
-  ): Promise<boolean> {
-    const { email, password } = authCredentialsDto;
-    const user = await this.usersService.getByEmail(email);
-
-    // If user with email exist and the password is valid.
-    if (user && (await user.validatePassword(password))) {
-      const passCode = genCode(6, 'numeric');
-      console.log(passCode);
-      await this.usersService.update(user.id, { passCode });
-      await this.mailService.sendUserConfirmation(user, passCode);
-      return true;
+  ): Promise<HttpResponse> {
+    const payload = {
+      code: '123456789'
     }
-    // Else return an error.
-    throw new BadRequestException(AuthMessage.INVALID_CREDENTIALS);
+    const jwtAccessToken = await this.jwtService.sign(payload);
+    // console.log(exp)
+    // console.log(currentTimeNow)
+    return {
+      error: false,
+      statusCode: HttpStatus.OK,
+      data: { jwtAccessToken },
+    }
   }
 
   async verifyPassCode(
@@ -66,6 +69,66 @@ export class AuthService {
     }
     // Else return an error.
     throw new BadRequestException(AuthMessage.INVALID_CREDENTIALS);
+  }
+
+  async sendEmailforgotPassword(
+    forgotPassword: ForgotPasswordDto
+  ): Promise<any> {
+    const { email } = forgotPassword;
+
+    const user = await this.usersService.getByEmail(email);
+    const payload = {
+      passCode: '123456'
+    }
+
+    const token = await this.jwtService.sign(payload)
+
+    const url = `${process.env.APP_DOMAIN}:${process.env.APP_PORT}/auth/new-password/${user.id}?token=${token}`
+    if(user){
+      await this.mailService.sendLinkForGotPassWord(user, url)
+
+      console.log(email);
+      console.log(user);
+      console.log(url);
+      return true;
+    }
+    throw new BadRequestException(AuthMessage.INVALID_CREDENTIALS);
+  }
+
+  async getNewPassword(
+    request
+  ): Promise<any> {
+    const { userId } = request.params;
+    const { token } = request.query;
+
+    console.log(token);
+
+    const payload = await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET });
+    
+    if(!payload){
+      throw new BadRequestException("token invalid or exprire")
+    }
+    
+    console.log(payload);
+
+    const { passCode, iat, exp } = payload;
+    
+    const currentTimeNow = moment().unix();
+    console.log(currentTimeNow);
+    console.log(iat);
+    console.log(exp);
+    if(currentTimeNow < iat || currentTimeNow > exp){
+      throw new BadRequestException("token invalid or exprire");
+    }
+
+    if(passCode != '1234567'){
+      throw new BadRequestException("passCode invalid");
+    }
+
+    return {
+      msg: "sucess",
+      statusCode: 200
+    }
   }
 
   async externalSignIn(req: Request): Promise<Express.User> {

@@ -3,7 +3,7 @@ type HttpResponse = {
     statusCode: number;
     message?: string;
     data?: any;
-  };
+};
   
   export default HttpResponse;
   

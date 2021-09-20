@@ -11,10 +11,10 @@ import { EditUserDto } from './dto/edit-user.dto';
 import AuthCreadentialsDto from 'src/auth/dto/auth-credentials.dto';
 import { User } from './user.entity';
 import { CommonMessage } from 'src/common/constants/messages.constants';
-import * as bcrypt from 'bcrypt';
 import UserRespondDto from './dto/user-response.dto';
 import UsersResponseDto from './dto/users-response.dto';
-
+import * as bcrypt from 'bcrypt';
+import { genCode } from 'src/helpers';
 @Injectable()
 export class UsersService {
   constructor(
@@ -88,6 +88,7 @@ export class UsersService {
     // Create new user and save.
     const newUser = this.usersRepository.create();
     newUser.email = email;
+    newUser.passCode = genCode(6);
 
     if (password) {
       // Hash password.
