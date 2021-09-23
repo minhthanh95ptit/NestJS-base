@@ -12,8 +12,6 @@ import { genCode } from '../helpers/index'
 import * as moment from "moment" 
 import HttpResponse from '../common/constants/HTTPResponse'
 import ForgotPasswordDto from './dto/forgot-password.dto';
-// const sgMail = require('@sendgrid/mail');
-// sgMail.setApiKey("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");
 @Injectable()
 export class AuthService {
   constructor(
