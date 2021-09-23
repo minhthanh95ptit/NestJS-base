@@ -12,6 +12,8 @@ import { genCode } from '../helpers/index'
 import * as moment from "moment" 
 import HttpResponse from '../common/constants/HTTPResponse'
 import ForgotPasswordDto from './dto/forgot-password.dto';
+// const sgMail = require('@sendgrid/mail');
+// sgMail.setApiKey("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");
 @Injectable()
 export class AuthService {
   constructor(
@@ -85,8 +87,7 @@ export class AuthService {
 
     const url = `${process.env.APP_DOMAIN}:${process.env.APP_PORT}/auth/new-password/${user.id}?token=${token}`
     if(user){
-      await this.mailService.sendLinkForGotPassWord(user, url)
-
+      await this.mailService.sendLinkForGotPassWord()
       console.log(email);
       console.log(user);
       console.log(url);
