@@ -5,5 +5,5 @@ type HttpResponse = {
     data?: any;
 };
   
-  export default HttpResponse;
+export default HttpResponse;
   

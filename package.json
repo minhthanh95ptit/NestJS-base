@@ -21,6 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@anchan828/nest-sendgrid": "^0.5.13",
+    "@mobizerg/nest-sendgrid-mail": "^1.0.0",
     "@nestjs-modules/mailer": "^1.6.0",
     "@nestjs/common": "^7.5.5",
     "@nestjs/config": "^0.5.0",
@@ -30,6 +32,8 @@
     "@nestjs/platform-express": "^7.5.5",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/typeorm": "^7.1.5",
+    "@ntegral/nestjs-sendgrid": "^1.0.0",
+    "@sendgrid/mail": "^7.4.7",
     "@types/bcrypt": "^3.0.0",
     "@types/passport-facebook": "^2.1.10",
     "@types/randomstring": "^1.1.7",
